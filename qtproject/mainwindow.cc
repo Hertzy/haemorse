@@ -7,6 +7,12 @@
 #include <QFile>
 #include <QIODevice>
 
+/**
+ * @brief readPhraseBookFromDevice reads text from the given device and returns a list
+ * of the lines
+ * @param dev
+ * @return
+ */
 QStringList readPhraseBookFromDevice(QIODevice* dev){
     QStringList ret;
     if(!dev->isOpen()){
@@ -54,7 +60,8 @@ MainWindow::MainWindow(QString phrasefilename, QWidget *parent) :
     connect(ui->spinBox_unit,SIGNAL(valueChanged(int)),beeper,SLOT(setUnitlength(int)));
     ui->spinBox_padding->setValue(beeper->padding());
     ui->spinBox_unit->setValue(beeper->unitlength());
-    ui->checkBox->setChecked(true);
+    //ui->checkBox_cont->setChecked(true);
+    //ui->checkBox_phrases->setChecked(false);
 
     beeper->start();
 }
@@ -103,22 +110,24 @@ void MainWindow::sendingMessage(QString msg)
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
+    //Check that the key typed was a character or letter
     if(e->key()<Qt::Key_Space||e->key()>Qt::Key_ydiaeresis){
         return;
     }
     if(!cur_.isEmpty()){
-
+        //Compare to current message being played
         QString toAdd=e->text().toUpper();
         if(e->key()==Qt::Key_Space){
             toAdd=" ";
         }
         if(curidx<cur_.length()){
-
+            //mark wrong answers as the correct letter in red
             if(toAdd!=cur_.mid(curidx,1)){
                 toAdd="<font color=\"red\">"+cur_.mid(curidx,1)+"</font>";
                 ui->statusBar->showMessage(encode_morse(cur_.mid(curidx,1))+" is "+cur_.mid(curidx,1),1500);
             }
         }else{
+            //Denote excess characters with underscores
             toAdd="<font color='red'>_</font>";
         }
         insertHtml(toAdd);
@@ -145,14 +154,14 @@ void MainWindow::focusOutEvent(QFocusEvent *e)
 }
 
 void MainWindow::insertHtml(QString toAdd)
-{
-    QString html=ui->textBrowser->toHtml();
-    if(rowc>3){
+{{
         int first=html.indexOf("<p");
         int last=html.indexOf("</p>")+4;
         html.remove(first,last-first);
         rowc--;
     }
+    QString html=ui->textBrowser->toHtml();
+    if(rowc>3)
     if(html.contains("<br />")){
         html="<p>"+toAdd+"</p>";
     }else if(html.contains(QRegExp("<p [^>]*> </p>"))){

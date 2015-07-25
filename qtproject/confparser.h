@@ -19,7 +19,7 @@
 /*
 * Stores a collection of parameter-value pairs.
 */
-typedef std::map<QString,QVariant> config_param_map;
+typedef QMap<QString,QVariant> config_param_map;
 
 /*
 * Parses configuration data from an IO device.

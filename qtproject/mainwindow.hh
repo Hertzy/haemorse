@@ -18,6 +18,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    /**
+     * @brief MainWindow builds
+     * @param phrasefilename
+     * @param parent
+     */
     explicit MainWindow(QString phrasefilename="phrasebook",QWidget *parent = 0);
     ~MainWindow();
     bool eventFilter(QObject *object, QEvent *e);

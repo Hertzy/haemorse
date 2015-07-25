@@ -10,6 +10,9 @@
 #include "beepgenerator.hh"
 #include "encoder.h"
 
+/**
+ * @brief The Beeper class keeps track of messages to be sent
+ */
 class Beeper : public QThread
 {
     Q_OBJECT

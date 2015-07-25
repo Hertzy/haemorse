@@ -8,26 +8,30 @@
 #include <QObject>
 #include <QMutex>
 
+/**
+ * @brief The BeepGenerator class is responsible for producing the individual dits and dahs.
+ */
 class BeepGenerator: public QObject
 {
     Q_OBJECT
 public:
-    explicit BeepGenerator(QObject* parent=0);
 
     /**
      * @brief BeepGenerator
      * @param f primary frequency for the beep
      * @param snr ratio of beep to noise
-     * @param fvar amount of random fluctuation in frequency
-     * @param harmonics amount of harmonic frequencies to include
      */
-    BeepGenerator(double frequency, double snr=-1,QObject* parent=0);
+    BeepGenerator(double frequency=500, double snr=-1,QObject* parent=0);
     ~BeepGenerator();
 
+    /**
+     * @brief beep produces a tone of the given length
+     * @param millis milliseconds to beep
+     */
     void beep(qint64 millis);
     /**
      * @brief silence produces a pause
-     * @param millis
+     * @param millis milliseconds of pause
      */
     void silence(qint64 millis);
 
@@ -36,9 +40,9 @@ public:
 
     double frequency() const;
     void setFrequency(double frequency);
-protected:
-    void generateBuffer();
 private:
+
+    void generateBuffer();
     double f_;
     double snr_;
     QAudioFormat format_;

@@ -20,24 +20,8 @@ inline void writeToDevice(QIODevice* odev_, char* toPlay,int samples){
     }
 }
 
-BeepGenerator::BeepGenerator(QObject *parent):
-    QObject(parent),f_(500),snr_(-1),odev_(0),odevMutex_(QMutex::NonRecursive)
-{
-    dev_=QAudioDeviceInfo::defaultOutputDevice();
-    format_.setByteOrder(QAudioFormat::BigEndian);
-    format_.setSampleRate(44100);
-    format_.setSampleSize(8);
-    format_.setChannelCount(1);
-    if(!dev_.isFormatSupported(format_)){
-        format_=dev_.nearestFormat(format_);
-    }
-    out_=new QAudioOutput(dev_,format_);
-    odev_=out_->start();
-    generateBuffer();
-}
-
 BeepGenerator::BeepGenerator(double f, double snr, QObject *parent):
-    QObject(parent),f_(f),snr_(snr),odev_(0)
+    QObject(parent),f_(f),snr_(snr),odev_(0),odevMutex_(QMutex::NonRecursive)
 {
     dev_=QAudioDeviceInfo::defaultOutputDevice();
     format_.setByteOrder(QAudioFormat::BigEndian);
@@ -192,7 +176,7 @@ void BeepGenerator::setFormat(const QAudioFormat &format)
     delete out_;
     odevMutex_.lock();
     if(odev_!=0){
-        delete odev_;
+        odev_->deleteLater();
     }
     out_=new QAudioOutput(dev_,format_);
     odev_=out_->start();

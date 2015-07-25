@@ -154,6 +154,7 @@ void Beeper::run()
             if(phrasebook.isEmpty()){
                 mode_=(mode_|GENERATE_MESSAGE) & ~PHRASEBOOK;
             }else{
+                //Select a random phrase and send it
                 int r=rand()%phrasebook.length();
                 mutex_.lock();
                 msgqueue_.enqueue(encode_morse(phrasebook.at(r)));
