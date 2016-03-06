@@ -75,10 +75,10 @@ const int CODE_COUNT=51;
 QString encode_morse(char c);
 
 /**
-* Encodes s into morse code, letters separated by the third argumnet,
+* Encodes s into morse code, letters separated by the third argument,
 * space indicated by the second argument
 */
-QString encode_morse(QString str,QString space="   ",QString letterspace=" ");
+QString encode_morse(const QString &str, const QString &space="   ",const QString &letterspace=" ");
 
 /*
 * Encodes a message in morse, interprets single spaces as

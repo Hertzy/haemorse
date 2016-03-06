@@ -34,7 +34,7 @@ QString encode_morse(char c)
     return "";
 }
 
-QString encode_morse(QString s, QString space, QString letterspace){
+QString encode_morse(const QString &s, const QString &space, const QString &letterspace){
     QString ret="";//String to be returned
     QString encoded="";//Character encoded into Morse code
     for(int i=0;i<s.length();i++){

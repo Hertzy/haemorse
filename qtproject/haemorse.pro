@@ -17,16 +17,28 @@ SOURCES += main.cc\
     confparser.cc \
     encoder.cc \
     beeper.cc \
-    beepgenerator.cc
+    beepgenerator.cc \
+    codestatistics.cpp \
+    pulsedecoder.cpp
 
 HEADERS  += mainwindow.hh \
     confparser.h \
     encoder.h \
     beeper.hh \
-    beepgenerator.hh
+    beepgenerator.hh \
+    codestatistics.h \
+    pulsedecoder.h
 
 FORMS    += mainwindow.ui
 
 UI_HEADERS_DIR = $$PWD
 UI_DIR = $$PWD
 UI_SOURCES_DIR = $$PWD
+
+DISTFILES += \
+    LoremIpsum \
+    Wikipedia_article \
+    Wikipedia_fi
+
+RESOURCES += \
+    plaintext.qrc

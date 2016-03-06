@@ -1,1 +1,6 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/plaintext">
+        <file alias="loremipsum">LoremIpsum</file>
+        <file alias="wikipedia">Wikipedia_article</file>
+    </qresource>
+</RCC>
