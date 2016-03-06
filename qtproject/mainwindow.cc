@@ -154,14 +154,15 @@ void MainWindow::focusOutEvent(QFocusEvent *e)
 }
 
 void MainWindow::insertHtml(QString toAdd)
-{{
+{
+    QString html=ui->textBrowser->toHtml();
+
+    if(rowc>3){
         int first=html.indexOf("<p");
         int last=html.indexOf("</p>")+4;
         html.remove(first,last-first);
         rowc--;
     }
-    QString html=ui->textBrowser->toHtml();
-    if(rowc>3)
     if(html.contains("<br />")){
         html="<p>"+toAdd+"</p>";
     }else if(html.contains(QRegExp("<p [^>]*> </p>"))){
