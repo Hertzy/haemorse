@@ -6,9 +6,11 @@
 #include <QList>
 #include <QDebug>
 
+#include <QDateTime>
+
 Beeper::Beeper(QObject *parent) :
     QThread(parent), unitlength_(75),mode_(CONTINUOUS),gen_(new BeepGenerator(400.0,0.0,this)),
-    runsema(0),padding_(0),paused(false)
+    runsema(0),padding_(0),paused(false),range_(QPair<int,int>(0,CODE_COUNT))
 {
     QAudioFormat format;
     format.setByteOrder(QAudioFormat::BigEndian);
@@ -25,6 +27,7 @@ Beeper::Beeper(QObject *parent) :
     }
     gen_->setFormat(format);
     msgqueue_.clear();
+    srand(QDateTime::currentMSecsSinceEpoch());
 }
 
 Beeper::~Beeper()
@@ -75,6 +78,16 @@ void Beeper::sendMorse(QString morse)
     QThread::msleep(unitlength_*7);
 
     if((mode_&CONTINUOUS)==CONTINUOUS) next();
+}
+
+QPair<int, int> Beeper::getRange() const
+{
+    return range_;
+}
+
+void Beeper::setRange(const QPair<int, int> &range)
+{
+    range_ = range;
 }
 QStringList Beeper::getPhrasebook() const
 {
@@ -164,8 +177,9 @@ void Beeper::run()
         if((mode_&GENERATE_MESSAGE)==GENERATE_MESSAGE && msgqueue_.isEmpty()){
             QString morse;
             int chars=rand()%3+2;
+            int rangewidth=range_.second-range_.first;
             for(int i=0;i<chars;i++){
-                QPair<char,QString> p =MORSE_CODES[rand()%CODE_COUNT];
+                QPair<char,QString> p =MORSE_CODES[range_.first+rand()%rangewidth];
                 morse+=p.second+" ";
             }
 

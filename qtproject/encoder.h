@@ -16,7 +16,7 @@ const QPair<char,QString> MORSE_CODES[] =
 {
     qMakePair('a',QString(".-")),
     qMakePair('b',QString("-...")),
-    qMakePair('c',QString(".-.-")),
+    qMakePair('c',QString("-.-.")),
     qMakePair('d',QString("-..")),
     qMakePair('e',QString(".")),
     qMakePair('f',QString("..-.")),

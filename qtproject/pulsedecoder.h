@@ -2,6 +2,7 @@
 #define PULSEDECODER_H
 
 #include "codestatistics.h"
+#include "elementfrequencytree.h"
 
 #include <QPair>
 #include <QList>
@@ -29,17 +30,59 @@ public:
     PulseDecoder(CodeStatistics* basestats=new CodeStatistics());
     ~PulseDecoder();
     long unitlength() const;
-
+    /**
+     * @brief decodePulseString decodes the given pulse string
+     * @param pstr
+     * @param live add statistics from the code string to a priori data
+     * @return
+     */
+    QString decodePulseString(PulseString pstr,bool live=false);
+    /**
+     * @brief clear forgets the guessed unit length
+     */
+    void clear();
 private:
     void guessFromCodePulseString(PulseString pstr);
     double calculateMeanHigh(PulseString pstr);
     double calculateVarHigh(PulseString pstr,double mean);
+    double calculateMeanLow(PulseString pstr);
+    double calculateVarLow(PulseString pstr, double mean);
     QString decodePulse(Pulse p);
     char decodeHighPulse(Pulse p);
     long unitlength_;
+    /**
+     * @brief meanHigh_ is the mean length of a high signal
+     */
     double meanHigh_;
+    /**
+     * @brief varHigh_ is the variance of high signal length
+     */
     double varHigh_;
+    /**
+     * @brief meanLow_ is the mean length of a low signal
+     */
+    double meanLow_;
+    /**
+     * @brief varLow_ is the variance of low signal length
+     */
+    double varLow_;
+
+    /**
+     * @brief ditMean_ is the mean length of a dit
+     */
+    double ditMean_;
+    /**
+     * @brief ditVar_ is the variance of dit length
+     */
+    double ditVar_;
+    double dahMean_;
+    double dahVar_;
+
     CodeStatistics* stats_;
+    ElementFrequencyTree& freqTreeNode_;
+
+    PulseString memory_;
+    int memorySize;
 };
 
 #endif // PULSEDECODER_H

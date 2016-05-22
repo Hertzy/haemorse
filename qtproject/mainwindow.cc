@@ -1,6 +1,8 @@
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
 
+#include <algorithm>
+
 #include <QDebug>
 #include<QStringList>
 #include <QThread>
@@ -56,8 +58,10 @@ MainWindow::MainWindow(QString phrasefilename, QWidget *parent) :
     connect(beeper,SIGNAL(aboutToSend(QString)),this,SLOT(sendingMessage(QString)));
     connect(this,SIGNAL(readyToReceive()),beeper,SLOT(next()));
     connect(ui->spinBox_padding,SIGNAL(valueChanged(int)),beeper,SLOT(setPadding(int)));
-    connect(ui->pushButton,SIGNAL(clicked(bool)),beeper,SLOT(setPaused(bool)));
+    connect(ui->pushButton,SIGNAL(toggled(bool)),beeper,SLOT(setPaused(bool)));
     connect(ui->spinBox_unit,SIGNAL(valueChanged(int)),beeper,SLOT(setUnitlength(int)));
+    connect(ui->rangeStart,SIGNAL(editingFinished()),this,SLOT(rangeChanged()));
+    connect(ui->rangeEnd,SIGNAL(editingFinished()),this,SLOT(rangeChanged()));
     ui->spinBox_padding->setValue(beeper->padding());
     ui->spinBox_unit->setValue(beeper->unitlength());
     //ui->checkBox_cont->setChecked(true);
@@ -110,11 +114,20 @@ void MainWindow::sendingMessage(QString msg)
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
+    static bool streak[]={false,false,false,false,false,
+                          false,false,false,false,false,
+                         false,false,false,false,false,
+                         false,false,false,false,false,
+                         false,false,false,false,false};
+    static const int streakCt=25;
+    static int streakidx=0;
     //Check that the key typed was a character or letter
-    if(e->key()<Qt::Key_Space||e->key()>Qt::Key_ydiaeresis){
+    if(e->key()<=Qt::Key_Space||e->key()>=Qt::Key_ydiaeresis){
+        ui->pushButton->toggle();
         return;
     }
     if(!cur_.isEmpty()){
+        bool correct=true;
         //Compare to current message being played
         QString toAdd=e->text().toUpper();
         if(e->key()==Qt::Key_Space){
@@ -123,8 +136,21 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         if(curidx<cur_.length()){
             //mark wrong answers as the correct letter in red
             if(toAdd!=cur_.mid(curidx,1)){
+                correct=false;
                 toAdd="<font color=\"red\">"+cur_.mid(curidx,1)+"</font>";
                 ui->statusBar->showMessage(encode_morse(cur_.mid(curidx,1))+" is "+cur_.mid(curidx,1),1500);
+            }
+            streak[streakidx]=correct;
+            streakidx=(streakidx+1)%streakCt;
+            int correctCount=0;
+            for(int i=0;i<streakCt;i++){
+                correctCount+=streak[i];
+            }
+            if(correctCount>0.9*streakCt){
+                handleStreak();
+                for(int i=0;i<streakCt;i++){
+                    streak[i]=false;
+                }
             }
         }else{
             //Denote excess characters with underscores
@@ -157,7 +183,7 @@ void MainWindow::insertHtml(QString toAdd)
 {
     QString html=ui->textBrowser->toHtml();
 
-    if(rowc>3){
+    while(rowc>ui->textBrowser->geometry().height()/(36+2)){
         int first=html.indexOf("<p");
         int last=html.indexOf("</p>")+4;
         html.remove(first,last-first);
@@ -184,6 +210,24 @@ void MainWindow::newPara()
     ui->textBrowser->setHtml(html);
 }
 
+void MainWindow::handleStreak()
+{
+    //If no advance is set, return.
+    if(ui->radio_none->isChecked())return;
+    if(ui->radio_Padding->isChecked()){
+        if(ui->spinBox_padding->value()>0){
+            ui->spinBox_padding->setValue(ui->spinBox_padding->value()-1);
+        }
+    }
+    if(ui->radio_wpm->isChecked()){
+        double wpm=12e2/double(ui->spinBox_unit->value());
+        wpm+=1;
+        int newUnit=int(12e2/wpm+0.5);
+        newUnit=std::max(ui->spinBox_unit->minimum(),newUnit);
+        ui->spinBox_unit->setValue(newUnit);
+    }
+}
+
 void MainWindow::on_checkBox_clicked(bool checked)
 {
     if(checked!=(beeper->mode()&Beeper::CONTINUOUS)){
@@ -197,5 +241,45 @@ void MainWindow::on_checkBox_2_clicked(bool checked)
         beeper->setMode(beeper->mode()|Beeper::PHRASEBOOK);
     }else{
         beeper->setMode(beeper->mode()& ~Beeper::PHRASEBOOK);
+    }
+}
+
+void MainWindow::rangeChanged()
+{
+    QChar startchar=ui->rangeStart->text().trimmed().at(0);
+    QChar endchar=ui->rangeEnd->text().trimmed().at(0);
+    int startIdx=0;
+    int endIdx=CODE_COUNT;
+    for(int i=0;i<CODE_COUNT;i++){
+        if(startchar==MORSE_CODES[i].first){
+            startIdx=i;
+        }
+        if(endchar==MORSE_CODES[i].first){
+            endIdx=i+1;
+        }
+    }
+    QPair<int,int> range(startIdx,endIdx);
+    if(endIdx<startIdx){
+        range.first=endIdx;
+        range.second=startIdx;
+    }
+    beeper->setRange(range);
+}
+
+void MainWindow::on_rangeStart_textChanged(const QString &arg1)
+{
+    QString trimmed=arg1.trimmed();
+    if(trimmed.length()>1){
+        QChar character=trimmed.at(trimmed.length()-1);
+        ui->rangeStart->setText(character);
+    }
+}
+
+void MainWindow::on_rangeEnd_textChanged(const QString &arg1)
+{
+    QString trimmed=arg1.trimmed();
+    if(trimmed.length()>1){
+        QChar character=trimmed.at(trimmed.length()-1);
+        ui->rangeStart->setText(character);
     }
 }

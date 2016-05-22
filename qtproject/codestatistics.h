@@ -3,11 +3,14 @@
 
 #include <QString>
 
+#include "elementfrequencytree.h"
+
 #include <QDebug>
 
 /**
  * @brief The CodeStatistics class provides a way to extract statistics about the
- * morse code being examined, to help the bayesian classification.
+ * morse code being examined, to provide a priori information about morse code for
+ * decoding purposes.
  */
 class CodeStatistics
 {
@@ -35,9 +38,21 @@ public:
      */
     double ditRatio() const;
 
+    /**
+     * @brief interElementRatio calculates the ratio of inter-element pauses to total pauses
+     * @return
+     */
+    double interElementRatio() const;
+
     double meanHigh() const;
 
     double varHigh() const;
+
+    double varLow() const;
+
+    double meanLow() const;
+
+    ElementFrequencyTree &freqTree();
 
 private:
     void updateStatsFromCode(const QString &code);
@@ -46,6 +61,7 @@ private:
      * @param d
      */
     void addHigh(double d);
+    void addLow(double d);
     int totalDits_;
     int totalDahs_;
     /**
@@ -68,7 +84,16 @@ private:
      * @brief stdHigh_ is the approximated standard deviation of element length in dits.
      */
     double varHigh_;
+    /**
+     * @brief meanLow_ is the approximated pause length in dits
+     */
+    double meanLow_;
+    /**
+     * @brief varLow_ is the variance of the pause length in dits.
+     */
+    double varLow_;
     QString codestring_;
+    ElementFrequencyTree freqTree_;
 };
 
 QDebug& operator <<(QDebug& dbg,const CodeStatistics &stats);

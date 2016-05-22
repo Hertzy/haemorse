@@ -1,6 +1,8 @@
 #include "mainwindow.hh"
 #include "beepgenerator.hh"
 
+#include "pulsedecoder.h"
+#include "pulsedecodertester.h"
 #include "codestatistics.h"
 
 #include <QApplication>
@@ -22,14 +24,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    QFile florem(":/plaintext/loremipsum");
-    florem.open(QIODevice::ReadOnly);
-    QByteArray blorem=florem.readAll();
-    QString lorem=QString::fromLatin1(blorem);
-
-    CodeStatistics loremStats(lorem);
-    qDebug()<<"Lorem ipsum:"<<loremStats;
-
+    /*
+     * Commenting out the decoder testing
     QFile fwiki(":/plaintext/wikipedia");
     fwiki.open(QIODevice::ReadOnly);
     QByteArray bwiki=fwiki.readAll();
@@ -37,6 +33,11 @@ int main(int argc, char *argv[])
 
     CodeStatistics wikiStats(wiki);
     qDebug()<<"Wiki articre stats"<<wikiStats;
+
+    PulseDecoder decoder(&wikiStats);
+
+    PulseDecoderTester tester(&decoder);
+    tester.test();*/
 
     MainWindow w(phrasefile);
     w.show();

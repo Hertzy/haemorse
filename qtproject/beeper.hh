@@ -46,6 +46,9 @@ public:
     QStringList getPhrasebook() const;
     void setPhrasebook(const QStringList &value);
 
+    QPair<int, int> getRange() const;
+    void setRange(const QPair<int, int> &range);
+
 signals:
     /**
      * @brief messageSent is emitted when a message has been sent from the queue.
@@ -74,6 +77,11 @@ private:
 
     int padding_;
     bool paused;
+
+    /**
+     * @brief range_ is the range of indices to test.
+     */
+    QPair<int,int> range_;
 
     QStringList phrasebook;
 };

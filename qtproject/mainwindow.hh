@@ -29,6 +29,7 @@ public:
 public slots:
     void show();
     void sendingMessage(QString msg);
+    void rangeChanged();
 signals:
     void readyToReceive();
 protected:
@@ -38,10 +39,14 @@ protected:
 private slots:
     void on_checkBox_clicked(bool checked);
     void on_checkBox_2_clicked(bool checked);
+    void on_rangeStart_textChanged(const QString &arg1);
+
+    void on_rangeEnd_textChanged(const QString &arg1);
 
 private:
     void insertHtml(QString toAdd);
     void newPara();
+    void handleStreak();
     Ui::MainWindow *ui;
     QString cur_;
     int curidx;

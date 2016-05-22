@@ -9,6 +9,8 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_VERSION, 5.0.2): QT+= multimedia
 
+CONFIG += c++11
+
 TARGET = HaeMorse
 TEMPLATE = app
 
@@ -19,7 +21,9 @@ SOURCES += main.cc\
     beeper.cc \
     beepgenerator.cc \
     codestatistics.cpp \
-    pulsedecoder.cpp
+    pulsedecoder.cpp \
+    pulsedecodertester.cpp \
+    elementfrequencytree.cpp
 
 HEADERS  += mainwindow.hh \
     confparser.h \
@@ -27,7 +31,9 @@ HEADERS  += mainwindow.hh \
     beeper.hh \
     beepgenerator.hh \
     codestatistics.h \
-    pulsedecoder.h
+    pulsedecoder.h \
+    pulsedecodertester.h \
+    elementfrequencytree.h
 
 FORMS    += mainwindow.ui
 
